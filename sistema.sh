@@ -1,5 +1,4 @@
 #! /bin/bash
-
 RUTA_PRINCIPAL="$(dirname "$(realpath "$0")")"
 
 echo "La ruta base del proyecto es: ${RUTA_PRINCIPAL}"
@@ -34,7 +33,14 @@ RUTA_DOCUMENTACION="$RUTA_PRINCIPAL/documentacion"
 CARPETAS_PRINCIPALES("RUTA_MODULOS" "RUTA_REPORTES" "RUTA_RESPALDOS" "RUTA_BITACORAS" "RUTA_TEMPORALES" "RUTA_DOCUMENTACION")
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES 
-
+verificar_carpetas_principales(){
+for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
+	if [[ ! -d "$carpeta" ]]; then
+		mkdir -p "$carpeta"
+		echo "Carpeta creada con exito"
+	fi
+done
+}
 
 
 
