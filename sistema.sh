@@ -32,6 +32,10 @@ RUTA_DOCUMENTACION="$RUTA_PRINCIPAL/documentacion"
 #ARREGLO RUTAS PRINCIPALES
 CARPETAS_PRINCIPALES=("$RUTA_MODULOS" "$RUTA_REPORTES" "$RUTA_RESPALDOS" "$RUTA_BITACORAS" "$RUTA_TEMPORALES" "$RUTA_DOCUMENTACION")
 
+#DECLARACION DE RUTA PARA LA BITACORA 
+ARCHIVO_BITACORA="$RUTA_BITACORAS/bitacora_$(date +%Y-%m-%d).log"
+
+
 #VERIFICACION DE LAS CARPETAS PRINCIPALES 
 verificar_carpetas_principales(){
 for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
@@ -42,9 +46,19 @@ for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
 done
 }
 
+#FUNCION PARA LA BITACORA 
+registrar_bitacora(){
+
+local msj="$1"
+local timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+
+echo "$timestamp" - "$(whoami)" - "$msj" >> "$ARCHIVO_BITACORA"
+
+}
 
 
 #Llamado de funciones 
 verificar_carpetas_principales
+registrar_bitacora "BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA"
 
 
