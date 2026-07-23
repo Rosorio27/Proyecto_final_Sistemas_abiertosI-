@@ -29,6 +29,7 @@ read -rp "Escriba nombre del nuevo grupo: " nombre_grupo
 #CREACION DEL NUEVO GRUPO
    if groupadd "$nombre_grupo" &> /dev/null; then
 	echo "Grupo creado exitosamente"
+	registrar_bitacora "Se creo el grupo '$nombre_grupo'"
 	return 0
    else
 	echo "No se pudo crear grupo. Verifique sus permisos de usuario"
