@@ -36,5 +36,55 @@ read -rp "Escriba nombre del nuevo grupo: " nombre_grupo
 	return 1
    fi
 
+}
+
+#FUNCION PARA LISTAR LOS GRUPOS EXISTENTES
+ver_grupos(){
+echo  "GRUPOS DE TRABAJO:"
+local filtrado
+
+filtrado="$(grep -E "^(desarrollo|infraestructura|seguridad|soporte)" /etc/group | cut -d: -f1)"
+	if [[ -z "$filtrado" ]]; then 
+		echo "Error al leer los grupos" 
+	else 
+
+		echo "$filtrado" | while read -r grupo; do 
+			echo " - $grupo"
+	done
+
+	fi
+}
+
+#FUNCION PARA VER LOS MIEMBROS 
+ver_miembros_grupos(){
+
+local nombre_grupo
+
+read -rp "Nombre del grupo a consultar: " nombre_grupo
+
+#VALLIDAD CAMPO VACIO 
+if [[ -z "$nombre_grupo" ]]; then
+	echo "ERROR: ESTO CAMPO NO PUEDE QUEDAR VACIO"
+	return 1
+fi
+
+#VALIDAD SI GRUPO NO EXISTE
+if ! getent group "$nombre_grupo" &> /dev/null; then 
+	echo "ERROR: GRUPO NO EXISTE"
+	return 1
+fi
+
+local mmiembros
+miembros="$(getent group "$nombre_grupo" | cut -d: -f4)"
+echo "INTEGRANTES DE '$nombre_grupo'"
+
+#VALIDACION DE MIEMBRE DEL GRUPO
+if [[ -z "$miembreso" ]]; then
+	echo "ERROR: NO SE MUESTRAN MIEMBROS PARA ESTE GRUPO"
+else
+	echo "$miembros" | tr ',' '\n' | while read -r usuario; do
+		echo   " -$usuario"
+	done
+fi
 
 }
