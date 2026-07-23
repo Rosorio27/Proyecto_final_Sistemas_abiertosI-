@@ -40,9 +40,20 @@ for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
 		echo "Carpeta creada con exito"
 	fi
 done
+
+}
+#VERIFICACION DE PRIVILEGIOS 
+verificar_privilegios(){
+if [[ $EUID -eq 0 ]]; then
+	ES_ROOT="si"
+else 
+	ES_ROOT="no"
+fi
+
 }
 
 #LLAMADO DE FUNCIONES
+verificar_privilegios
 verificar_carpetas_principales
 registrar_bitacora "BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA"
 
