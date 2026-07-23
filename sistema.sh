@@ -1,12 +1,10 @@
 #! /bin/bash
 RUTA_PRINCIPAL="$(dirname "$(realpath "$0")")"
 
-echo "La ruta base del proyecto es: ${RUTA_PRINCIPAL}"
-
+#DECLARACION DE ARCHIVO DE CONFIGURACION
 ARCHIVO_CONFIG="$RUTA_PRINCIPAL/configuracion/configuracion.conf"
 
-
-#si el archivo no existe: exit 1 y sale del script 
+#VALIDACION DEL ARCHIVO DE CONFIGURACION
 if [[ ! -f "$ARCHIVO_CONFIG" ]];then
 
    echo "ERROR AL CARGAR ARCHIVO"
@@ -15,11 +13,7 @@ if [[ ! -f "$ARCHIVO_CONFIG" ]];then
 else
 #Si el archivo existe carga las variable de entorno y comienza el script 
 	source "$ARCHIVO_CONFIG"
-
 fi
-
-#Parte del header: informacion principal del sistema
-echo "$NOMBRE_ORGANIZACION - $NOMBRE_SISTEMA"
 
 #DECLARACION DE RUTAS PRINCIPALES
 RUTA_MODULOS="$RUTA_PRINCIPAL/modulos"
@@ -35,6 +29,8 @@ CARPETAS_PRINCIPALES=("$RUTA_MODULOS" "$RUTA_REPORTES" "$RUTA_RESPALDOS" "$RUTA_
 #DECLARACION DE RUTA PARA LA BITACORA 
 ARCHIVO_BITACORA="$RUTA_BITACORAS/bitacora_$(date +%Y-%m-%d).log"
 
+#SOURCE PARA BITACORA
+source "$RUTA_MODULOS/herramientas.sh"
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES 
 verificar_carpetas_principales(){
@@ -46,22 +42,9 @@ for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
 done
 }
 
-#FUNCION PARA LA BITACORA 
-registrar_bitacora(){
-
-local msj="$1"
-local timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-
-echo "$timestamp" - "$(whoami)" - "$msj" >> "$ARCHIVO_BITACORA"
-
-}
-
-
-#Llamado de funciones 
+#LLAMADO DE FUNCIONES
 verificar_carpetas_principales
 registrar_bitacora "BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA"
-
-
 
 #Header con informacion del sistema (punto 6 del proyecto)
 mostrar_header(){
