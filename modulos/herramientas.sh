@@ -17,3 +17,14 @@ echo
 read -rp " Presione ENTER para continuar..."
 
 }
+
+requiere_root(){
+
+if [[ "$ES_ROOT" != "si" ]]; then
+
+	echo "Esta operacion requiere privilegios administrativos"
+	return 1
+fi
+	return 0
+}
+
