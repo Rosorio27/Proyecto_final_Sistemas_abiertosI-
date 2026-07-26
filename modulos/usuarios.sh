@@ -132,3 +132,72 @@ local usuario_actual="$(whoami)"
     fi
 
 }
+#===========================================================================================================================================================
+#FUNCION PARA MODIFICAR LA INFORMACION DE LOS USUARIOS 
+
+modificar_usuario(){
+
+if ! requiere_root; then
+        return 1
+fi
+
+local nombre_usuario
+read -rp "Nombre del usuario a modificar: " nombre_usuario
+
+#VALIDACION CAMPO VACIO 
+if [[ -z "$nombre_usuario" ]]; then
+        echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
+        return 1
+fi
+
+#VALIDACION DE USUARIO EXISTENTE 
+if ! id "$nombre_usuario" &> /dev/null; then
+        echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
+        return 1
+fi
+
+echo "¿Qué desea modificar?"
+echo "1) Comentario / nombre completo"
+echo "2) Shell asignada"
+
+local opcion_modificar
+read -rp "Opción: " opcion_modificar
+
+case "$opcion_modificar" in
+
+	1)
+            local nuevo_comentario
+            read -rp "Nuevo comentario: " nuevo_comentario
+
+		if usermod -c "$nuevo_comentario" "$nombre_usuario" &> /dev/null; then
+                	echo "Comentario actualizado correctamente"
+                	registrar_bitacora "Se modifico el comentario del usuario '$nombre_usuario'"
+            	else
+                	echo "ERROR: NO SE PUDO ACTUALIZAR"
+            	fi
+            ;;
+        2)
+            local nueva_shell
+            read -rp "Nueva shell (ej. /bin/bash): " nueva_shell
+
+		if [[ ! -f "$nueva_shell" ]]; then
+ 	               echo "ERROR: esa shell no existe en el sistema"
+        	        return 1
+            	fi
+
+		if usermod -s "$nueva_shell" "$nombre_usuario" &> /dev/null; then
+	                echo "Shell actualizada correctamente"
+        	        registrar_bitacora "Se modifico la shell del usuario '$nombre_usuario'"
+            	else
+                	echo "ERROR: NO SE PUDO ACTUALIZAR"
+            	fi
+            ;;
+        *)
+            echo "ERROR: OPCION INVALIDA"
+            return 1
+            ;;
+    esac
+}
+
+#===========================================================================================================================================================
+#FUNCION PARA BLOQUEAR UN USUARIO
