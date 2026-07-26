@@ -106,4 +106,29 @@ fi
 }
 #==========================================================================================================================================================
 
+#FUNCION PARA LISTAR TODOS LOS USUARIOS
+lista_usuarios(){
 
+echo "Lista de todos los usuarios del Sistema"
+
+local encontrados=0
+local usuario_actual="$(whoami)"
+
+    while read -r linea; do
+        local nombre="$(echo "$linea" | cut -d: -f1)"
+        local uid="$(echo "$linea" | cut -d: -f3)"
+        local grupo_gid="$(echo "$linea" | cut -d: -f4)"
+
+        if [[ "$uid" -ge 1000 ]] && [[ "$nombre" != "nobody" ]] && [[ "$nombre" != "$usuario_actual" ]]; then
+            local nombre_grupo
+            nombre_grupo="$(getent group "$grupo_gid" | cut -d: -f1)"
+            echo " - $nombre (grupo: $nombre_grupo)"
+            encontrados=1
+        fi
+    done < /etc/passwd
+
+    if [[ "$encontrados" -eq 0 ]]; then
+        echo "  (Aún no se ha creado ningún usuario)"
+    fi
+
+}
