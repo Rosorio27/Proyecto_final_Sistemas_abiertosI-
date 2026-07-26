@@ -33,6 +33,8 @@ ARCHIVO_BITACORA="$RUTA_BITACORAS/bitacora_$(date +%Y-%m-%d).log"
 source "$RUTA_MODULOS/herramientas.sh"
 #SOURCE PARA MODULO GRUPOS
 source "$RUTA_MODULOS/grupos.sh"
+#SOURCE PARA MODULO USUARIOS
+source "$RUTA_MODULOS/usuarios.sh"
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES 
 verificar_carpetas_principales(){
@@ -96,7 +98,7 @@ menu_principal(){
         read -rp "Seleccione una opcion: " opcion
 
         case "$opcion" in
-            1) echo "Modulo de usuarios (en construccion)"; ver_miembros_grupos; registrar_bitacora "Acceso a modulo de usuarios"; read -rp "Presione Enter para continuar..." ;;
+            1) crear_usuarios; pausar;;
             2) menu_grupos ;;
             3) echo "Modulo de carpetas (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             4) echo "Modulo de archivos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
