@@ -97,7 +97,7 @@ menu_principal(){
 
         case "$opcion" in
             1) echo "Modulo de usuarios (en construccion)"; ver_miembros_grupos; registrar_bitacora "Acceso a modulo de usuarios"; read -rp "Presione Enter para continuar..." ;;
-            2) echo "Modulo de grupos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
+            2) menu_grupos ;;
             3) echo "Modulo de carpetas (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             4) echo "Modulo de archivos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             5) echo "Modulo de permisos (en construccion)"; read -rp "Presione Enter para continuar..." ;;

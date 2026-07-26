@@ -37,10 +37,9 @@ confirmar_accion(){
 local mensaje="$1"
 local respuesta
 
-read -rp "$mensaje" (s/n): " respuesta
+read -rp "$mensaje (s/n): " respuesta
 
-if [[ "$respuesta" == "s " ]] || [[ "$respuesta" == "S" ]]; then
-
+if [[ "$respuesta" == "s" ]] || [[ "$respuesta" == "S" ]]; then
 	return 0
 else
 	echo " Cancelando operacion" 
