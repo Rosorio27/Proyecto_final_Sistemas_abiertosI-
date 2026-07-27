@@ -35,6 +35,8 @@ source "$RUTA_MODULOS/herramientas.sh"
 source "$RUTA_MODULOS/grupos.sh"
 #SOURCE PARA MODULO USUARIOS
 source "$RUTA_MODULOS/usuarios.sh"
+#SOURCE PARA MODULOS CARPETAS
+source "$RUTA_MODULOS/carpetas.sh"
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES 
 verificar_carpetas_principales(){
@@ -100,7 +102,7 @@ menu_principal(){
         case "$opcion" in
             1) menu_usuarios; pausar;;
             2) menu_grupos ;;
-            3) echo "Modulo de carpetas (en construccion)"; read -rp "Presione Enter para continuar..." ;;
+            3) menu_carpetas ;;
             4) echo "Modulo de archivos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             5) echo "Modulo de permisos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             6) echo "Modulo de procesos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
