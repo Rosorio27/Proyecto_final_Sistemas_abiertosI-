@@ -201,3 +201,238 @@ case "$opcion_modificar" in
 
 #===========================================================================================================================================================
 #FUNCION PARA BLOQUEAR UN USUARIO
+
+bloquear_usuario() {
+
+if ! requiere_root; then
+        return 1
+fi
+
+local nombre_usuario
+read -rp "Nombre del usuario a bloquear: " nombre_usuario
+
+#VALIDACION DE CAMPO VACIO
+if [[ -z "$nombre_usuario" ]]; then
+        echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
+        return 1
+fi
+
+#VALIDACION DE EXISTENCIA DE USUARIO
+if ! id "$nombre_usuario" &> /dev/null; then
+        echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
+        return 1
+fi
+#BLOQUEAR UN USUARIO
+if usermod -L "$nombre_usuario" &> /dev/null; then
+        echo "Usuario '$nombre_usuario' bloqueado correctamente"
+        registrar_bitacora "Se bloqueo el usuario '$nombre_usuario'"
+        return 0
+    else
+        echo "ERROR: NO SE PUDO BLOQUEAR EL USUARIO"
+        return 1
+fi
+
+}
+#===========================================================================================================================================================
+
+#FUNCION PARA DESBLOQUEAR UN USUARIO 
+
+
+desbloquear_usuario() {
+
+if ! requiere_root; then
+        return 1
+fi
+
+local nombre_usuario
+read -rp "Nombre del usuario a desbloquear: " nombre_usuario
+
+#VALIDACION DE UN CAMPO VACIO 
+
+if [[ -z "$nombre_usuario" ]]; then
+        echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
+        return 1
+fi
+
+#VALIDACION SI EXISTE EL USUARIO 
+if ! id "$nombre_usuario" &> /dev/null; then
+        echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
+        return 1
+fi
+
+#DESBLOQUEAR A UN USUARIO
+if usermod -U "$nombre_usuario" &> /dev/null; then
+        echo "Usuario '$nombre_usuario' desbloqueado correctamente"
+        registrar_bitacora "Se desbloqueo el usuario '$nombre_usuario'"
+        return 0
+    else
+        echo "ERROR: NO SE PUDO DESBLOQUEAR EL USUARIO"
+        return 1
+fi
+
+}
+#===========================================================================================================================================================
+
+
+#FUNCION PARA ELIMINAR UN USUARIO 
+
+eliminar_usuario() {
+
+if ! requiere_root; then
+        return 1
+fi
+
+local nombre_usuario
+read -rp "Nombre del usuario a eliminar: " nombre_usuario
+
+#VALIDACION DE CAMPO VACIO 
+if [[ -z "$nombre_usuario" ]]; then
+        echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
+        return 1
+fi
+
+#VALIDACION SI USUARIO NO EXISTE 
+if ! id "$nombre_usuario" &> /dev/null; then
+        echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
+        return 1
+fi
+
+#VALIDACION CONFIRAMA LA OPERACION ANTES DE REALIZAR EL CAMBIO
+if ! confirmar_accion "¿Está seguro que desea eliminar al usuario '$nombre_usuario'?"; then
+        return 1
+fi
+
+if userdel -r "$nombre_usuario" &> /dev/null; then
+        echo "Usuario '$nombre_usuario' eliminado correctamente"
+        registrar_bitacora "Se elimino el usuario '$nombre_usuario'"
+        return 0
+    else
+        echo "ERROR: NO SE PUDO ELIMINAR EL USUARIO"
+        return 1
+fi
+
+}
+
+#===========================================================================================================================================================
+
+
+#FUNCION PARA AGREDAR UN USUARIO A UN GRUPO
+
+agregar_usuario_a_grupo() {
+
+if ! requiere_root; then
+        return 1
+fi
+
+local nombre_usuario
+local nombre_grupo
+
+read -rp "Nombre del usuario: " nombre_usuario
+read -rp "Nombre del grupo: " nombre_grupo
+
+#VALIDACION DE CAMPOS VACIOS
+if [[ -z "$nombre_usuario" ]] || [[ -z "$nombre_grupo" ]]; then
+        echo "ERROR: AMBOS CAMPOS SON OBLIGATORIOS"
+        return 1
+fi
+
+#VALIDACION DE USUARIO INEXISTENTE
+if ! id "$nombre_usuario" &> /dev/null; then
+        echo "ERROR: EL USUARIO NO EXISTE"
+        return 1
+fi
+
+#VALIDACION DE GRUPO INEXISTENTE
+if ! getent group "$nombre_grupo" &> /dev/null; then
+        echo "ERROR: EL GRUPO NO EXISTE"
+        return 1
+fi
+
+#AGREGAR UN USUARIO A UN GRUPO
+if usermod -aG "$nombre_grupo" "$nombre_usuario" &> /dev/null; then
+        echo "Usuario agregado al grupo correctamente"
+        registrar_bitacora "Se agrego '$nombre_usuario' al grupo '$nombre_grupo'"
+        return 0
+    else
+        echo "ERROR: NO SE PUDO AGREGAR"
+        return 1
+fi
+
+}
+
+#===========================================================================================================================================================
+
+#FUNCION PARA ELIMINAR DE UN GRUPO UN USUARIO
+
+retirar_usuario_de_grupo() {
+
+if ! requiere_root; then
+        return 1
+fi
+
+local nombre_usuario
+local nombre_grupo
+
+read -rp "Nombre del usuario: " nombre_usuario
+read -rp "Nombre del grupo: " nombre_grupo
+
+#VALIDACION DE CAMPOS VACIOS
+if [[ -z "$nombre_usuario" ]] || [[ -z "$nombre_grupo" ]]; then
+        echo "ERROR: AMBOS CAMPOS SON OBLIGATORIOS"
+        return 1
+fi
+
+#RETIRAR DEL GRUPO UN USUARIO
+if gpasswd -d "$nombre_usuario" "$nombre_grupo" &> /dev/null; then
+        echo "Usuario retirado del grupo correctamente"
+        registrar_bitacora "Se retiro '$nombre_usuario' del grupo '$nombre_grupo'"
+        return 0
+    else
+        echo "ERROR: NO SE PUDO RETIRAR (verifique que pertenezca a ese grupo)"
+        return 1
+fi
+
+}
+#===========================================================================================================================================================
+
+
+#MENU DE USUARIO
+#===========================================================================================================================================================
+menu_usuarios() {
+    local opcion
+    while true; do
+        clear
+        echo "============================================"
+        echo " ADMINISTRACIÓN DE USUARIOS"
+        echo "============================================"
+        echo "1) Crear usuario"
+        echo "2) Ver información de un usuario"
+        echo "3) Listar usuarios"
+        echo "4) Modificar usuario"
+        echo "5) Bloquear usuario"
+        echo "6) Desbloquear usuario"
+        echo "7) Eliminar usuario"
+        echo "8) Agregar usuario a grupo"
+        echo "9) Retirar usuario de grupo"
+        echo "0) Volver al menú principal"
+        echo "============================================"
+        read -rp "Opción: " opcion
+
+        case "$opcion" in
+            1) crear_usuarios ;;
+            2) ver_info;;
+            3) lista_usuarios ;;
+            4) modificar_usuario ;;
+            5) bloquear_usuario ;;
+            6) desbloquear_usuario ;;
+            7) eliminar_usuario ;;
+            8) agregar_usuario_a_grupo ;;
+            9) retirar_usuario_de_grupo ;;
+            0) return ;;
+            *) echo "Opción inválida." ;;
+        esac
+        pausar
+    done
+}
+
+#===========================================================================================================================================================

@@ -98,7 +98,7 @@ menu_principal(){
         read -rp "Seleccione una opcion: " opcion
 
         case "$opcion" in
-            1) modificar_usuario; pausar;;
+            1) menu_usuarios; pausar;;
             2) menu_grupos ;;
             3) echo "Modulo de carpetas (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             4) echo "Modulo de archivos (en construccion)"; read -rp "Presione Enter para continuar..." ;;

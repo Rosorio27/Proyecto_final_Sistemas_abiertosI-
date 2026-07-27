@@ -4,3 +4,14 @@
 2026-07-26 - 13:19:14 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
 2026-07-26 - 13:19:52 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
 2026-07-26 - 13:20:11 - root - Se modifico el comentario del usuario 'juan'
+2026-07-26 - 23:43:45 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-07-26 - 23:44:13 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-07-26 - 23:44:29 - root - Se creo el usuario 'ramon_dev' en el grupo 'desarrollo'
+2026-07-26 - 23:45:29 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-07-26 - 23:46:16 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-07-26 - 23:46:47 - root - Se bloqueo el usuario 'ramon_dev'
+2026-07-26 - 23:46:59 - root - Se desbloqueo el usuario 'ramon_dev'
+2026-07-26 - 23:47:15 - root - Se elimino el usuario 'ramon_dev'
+2026-07-26 - 23:47:38 - root - Se agrego 'juan' al grupo 'seguridad'
+2026-07-26 - 23:47:53 - root - Se retiro 'juan' del grupo 'seguridad'
+2026-07-26 - 23:48:00 - root - Salida del sistema
