@@ -39,6 +39,8 @@ source "$RUTA_MODULOS/usuarios.sh"
 source "$RUTA_MODULOS/carpetas.sh"
 #SOURCE PARA MODULO ARCHIVOS
 source "$RUTA_MODULOS/archivos.sh"
+#SOURCE PARA MODULO PERMISOS
+source "$RUTA_MODULOS/permisos.sh"
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES 
 verificar_carpetas_principales(){
@@ -106,7 +108,7 @@ menu_principal(){
             2) menu_grupos ;;
             3) menu_carpetas ;;
             4) menu_archivos ;;
-            5) echo "Modulo de permisos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
+            5) menu_permisos ;;
             6) echo "Modulo de procesos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             7) echo "Modulo de almacenamiento (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             8) echo "Configuracion del shell (en construccion)"; read -rp "Presione Enter para continuar..." ;;
