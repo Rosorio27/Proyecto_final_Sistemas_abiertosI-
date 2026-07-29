@@ -45,7 +45,10 @@ source "$RUTA_MODULOS/permisos.sh"
 source "$RUTA_MODULOS/procesos.sh"
 #SOURCE PARA MODULO ALMACENAMIENTO
 source "$RUTA_MODULOS/almacenamiento.sh"
-
+#SOURCE PARA MODULO SHELL
+source "$RUTA_MODULOS/shell.sh"
+#SOURCE PARA MODULO RESPALDOS
+source "$RUTA_MODULOS/respaldos.sh"
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES
 verificar_carpetas_principales(){
@@ -116,8 +119,8 @@ menu_principal(){
             5) menu_permisos ;;
             6) menu_procesos ;;
             7) menu_almacenamiento ;;
-            8) echo "Configuracion del shell (en construccion)"; read -rp "Presione Enter para continuar..." ;;
-            9) echo "Modulo de respaldos (en construccion)"; read -rp "Presione Enter para continuar..." ;;
+            8) menu_shell ;;
+            9) menu_respaldos ;;
             10) echo "Modulo de reportes (en construccion)"; read -rp "Presione Enter para continuar..." ;;
             11) cat "$ARCHIVO_BITACORA"; read -rp "Presione Enter para continuar..." ;;
             12) uname -a; read -rp "Presione Enter para continuar..." ;;
