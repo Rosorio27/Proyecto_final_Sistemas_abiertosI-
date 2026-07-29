@@ -1,0 +1,26 @@
+REPORTE DE PROCESOS
+Organización: Jetsterio
+Fecha: 29/07/2026
+Hora: 09:49:34
+Generado por: ramon
+----------------------------------------
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+ramon       2424  200  0.0   8280  4096 pts/0    R+   09:49   0:00 ps aux --sort=-%cpu
+ramon       1935  0.4  0.0   5940  4480 pts/0    S+   09:48   0:00 /bin/bash ./sistema.sh
+root         404  0.0  0.0   3140  1284 ?        S    08:07   0:03 /init
+root         249  0.0  0.5 2516264 40312 ?       Ssl  08:07   0:02 /usr/lib/snapd/snapd
+root           1  0.0  0.1  22284 12628 ?        Ss   08:07   0:02 /sbin/init
+root        1907  0.0  0.1 1830352 12800 ?       Ssl  09:40   0:00 /usr/libexec/wsl-pro-service
+root         131  0.0  0.0 377492  6116 ?        Ssl  08:07   0:01 snapfuse /var/lib/snapd/snaps/gnome-46-2404_164.snap /snap/gnome-46-2404/164 -o ro,nodev,allow_other,suid
+root          42  0.0  0.1  66752 15044 ?        S<s  08:07   0:00 /usr/lib/systemd/systemd-journald
+ollama       246  0.0  0.4 2263968 35756 ?       Ssl  08:07   0:00 /usr/local/bin/ollama serve
+root         107  0.0  0.0 302464  6836 ?        Ssl  08:07   0:00 snapfuse /var/lib/snapd/snaps/core24_1643.snap /snap/core24/1643 -o ro,nodev,allow_other,suid
+message+     242  0.0  0.0   9636  4864 ?        Ss   08:07   0:00 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+root          91  0.0  0.0  25540  6272 ?        Ss   08:07   0:00 /usr/lib/systemd/systemd-udevd
+ramon        406  0.0  0.0   6336  5120 pts/0    Ss   08:07   0:00 -bash
+systemd+     229  0.0  0.0  91028  7424 ?        Ssl  08:07   0:00 /usr/lib/systemd/systemd-timesyncd
+ramon        460  0.0  0.1  20392 11264 ?        Ss   08:07   0:00 /usr/lib/systemd/systemd --user
+root         250  0.0  0.1  17964  8192 ?        Ss   08:07   0:00 /usr/lib/systemd/systemd-logind
+polkitd     1353  0.0  0.0 308164  7680 ?        Ssl  08:19   0:00 /usr/lib/polkit-1/polkitd --no-debug
+systemd+     228  0.0  0.1  21336 12672 ?        Ss   08:07   0:00 /usr/lib/systemd/systemd-resolved
+root         292  0.0  0.2 107028 22656 ?        Ssl  08:07   0:00 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal

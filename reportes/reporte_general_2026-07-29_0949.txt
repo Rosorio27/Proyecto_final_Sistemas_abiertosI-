@@ -1,0 +1,62 @@
+REPORTE DE GENERAL DEL SISTEMA
+Organización: Jetsterio
+Fecha: 29/07/2026
+Hora: 09:49:47
+Generado por: ramon
+----------------------------------------
+Usuarios: 
+
+Grupos: 
+GRUPOS DE TRABAJO:
+--- Grupos obligatorios de la organización ---
+ - desarrollo
+ - infraestructura
+ - seguridad
+ - soporte
+--- Grupos adicionales creados ---
+ - equipo-ventas
+ - medicos
+ - enfermeria
+ - nuevoGrupo
+
+Almacenamiento: 
+Filesystem      Size  Used Avail Use% Mounted on
+none            3.8G     0  3.8G   0% /usr/lib/modules/6.6.87.2-microsoft-standard-WSL2
+none            3.8G  4.0K  3.8G   1% /mnt/wsl
+drivers         476G  307G  170G  65% /usr/lib/wsl/drivers
+/dev/sdd       1007G   13G  943G   2% /
+none            3.8G   88K  3.8G   1% /mnt/wslg
+none            3.8G     0  3.8G   0% /usr/lib/wsl/lib
+rootfs          3.8G  2.7M  3.8G   1% /init
+none            3.8G  1.2M  3.8G   1% /run
+none            3.8G     0  3.8G   0% /run/lock
+none            3.8G     0  3.8G   0% /run/shm
+none            3.8G   76K  3.8G   1% /mnt/wslg/versions.txt
+none            3.8G   76K  3.8G   1% /mnt/wslg/doc
+C:\             476G  307G  170G  65% /mnt/c
+snapfuse        128K  128K     0 100% /snap/bare/5
+snapfuse         67M   67M     0 100% /snap/core24/1643
+snapfuse        253M  253M     0 100% /snap/firefox/8595
+snapfuse         92M   92M     0 100% /snap/gtk-common-themes/1535
+snapfuse        615M  615M     0 100% /snap/gnome-46-2404/164
+snapfuse        395M  395M     0 100% /snap/mesa-2404/1165
+snapfuse        402M  402M     0 100% /snap/mesa-2404/1839
+snapfuse         51M   51M     0 100% /snap/snapd/27406
+tmpfs           778M   20K  778M   1% /run/user/1000
+snapfuse        258M  258M     0 100% /snap/firefox/8664
+
+Procesos (top 10): 
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+ramon       1935  0.7  0.0   5940  4480 pts/0    S+   09:48   0:00 /bin/bash ./sistema.sh
+root         404  0.0  0.0   3140  1284 ?        S    08:07   0:03 /init
+root         249  0.0  0.5 2516264 40312 ?       Ssl  08:07   0:02 /usr/lib/snapd/snapd
+root           1  0.0  0.1  22284 12628 ?        Ss   08:07   0:02 /sbin/init
+root        1907  0.0  0.1 1830352 12800 ?       Ssl  09:40   0:00 /usr/libexec/wsl-pro-service
+root         131  0.0  0.0 377492  6116 ?        Ssl  08:07   0:01 snapfuse /var/lib/snapd/snaps/gnome-46-2404_164.snap /snap/gnome-46-2404/164 -o ro,nodev,allow_other,suid
+root          42  0.0  0.1  66752 15044 ?        S<s  08:07   0:00 /usr/lib/systemd/systemd-journald
+ollama       246  0.0  0.4 2263968 35756 ?       Ssl  08:07   0:00 /usr/local/bin/ollama serve
+root         107  0.0  0.0 302464  6836 ?        Ssl  08:07   0:00 snapfuse /var/lib/snapd/snaps/core24_1643.snap /snap/core24/1643 -o ro,nodev,allow_other,suid
+
+Respaldos: 
+--- Respaldos disponibles ---
+  (No hay respaldos disponibles)

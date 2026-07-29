@@ -49,6 +49,8 @@ source "$RUTA_MODULOS/almacenamiento.sh"
 source "$RUTA_MODULOS/shell.sh"
 #SOURCE PARA MODULO RESPALDOS
 source "$RUTA_MODULOS/respaldos.sh"
+#SOURCE PARA MODULO REPORTES
+source "$RUTA_MODULOS/reportes.sh"
 
 #VERIFICACION DE LAS CARPETAS PRINCIPALES
 verificar_carpetas_principales(){
@@ -121,7 +123,7 @@ menu_principal(){
             7) menu_almacenamiento ;;
             8) menu_shell ;;
             9) menu_respaldos ;;
-            10) echo "Modulo de reportes (en construccion)"; read -rp "Presione Enter para continuar..." ;;
+            10) menu_reportes ;;
             11) cat "$ARCHIVO_BITACORA"; read -rp "Presione Enter para continuar..." ;;
             12) uname -a; read -rp "Presione Enter para continuar..." ;;
             0) registrar_bitacora "Salida del sistema"; echo "Saliendo del sistema..."; exit 0 ;;

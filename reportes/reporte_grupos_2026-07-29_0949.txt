@@ -1,0 +1,17 @@
+REPORTE DE GRUPOS
+Organización: Jetsterio
+Fecha: 29/07/2026
+Hora: 09:49:22
+Generado por: ramon
+----------------------------------------
+GRUPOS DE TRABAJO:
+--- Grupos obligatorios de la organización ---
+ - desarrollo
+ - infraestructura
+ - seguridad
+ - soporte
+--- Grupos adicionales creados ---
+ - equipo-ventas
+ - medicos
+ - enfermeria
+ - nuevoGrupo
