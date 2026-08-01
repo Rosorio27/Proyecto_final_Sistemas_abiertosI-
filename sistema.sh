@@ -132,4 +132,11 @@ menu_principal(){
     done
 }
 
+#VERIFICACION DE ARGUMENTO PARA RESPALDO AUTOMATICO VIA CRON
+if [[ "$1" == "--respaldo-automatico" ]]; then
+	source "$RUTA_MODULOS/respaldos.sh"
+	respaldo_automatico
+	exit 0
+fi
+
 menu_principal
