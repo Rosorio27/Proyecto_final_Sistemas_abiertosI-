@@ -12,29 +12,40 @@ fi
 
 local nombre_grupo
 
+echo "Formato permitido: solo minúsculas, números, '-' o '_'."
+echo "Debe iniciar con una letra minúscula o '_'."
+echo ""
+
 read -rp "Escriba nombre del nuevo grupo: " nombre_grupo
 
 #VALIDACION DE CAMPO VACIO
-   if [[ -z "$nombre_grupo" ]]; then
+if [[ -z "$nombre_grupo" ]]; then
 	echo "ERROR: ESTE CAMPO NO PUEDE QUEDAR VACIO"
 	return 1
-   fi
+fi
+
+#VALIDACION DE FORMATO VALIDO
+if [[ ! "$nombre_grupo" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
+        echo "ERROR: nombre inválido. Use solo minúsculas, números, '-' o '_',"
+        echo "       y debe iniciar con una letra minúscula o '_'."
+        return 1
+fi
 
 #VALIDACION GRUPO DUPLICADO
-   if getent group "$nombre_grupo" &> /dev/null; then
+if getent group "$nombre_grupo" &> /dev/null; then
 	echo "ERROR: GRUPO '$nombre_grupo' YA EXISTE"
 	return 1
-   fi
+fi
 
 #CREACION DEL NUEVO GRUPO
-   if groupadd "$nombre_grupo" &> /dev/null; then
+if groupadd "$nombre_grupo" &> /dev/null; then
 	echo "Grupo creado exitosamente"
 	registrar_bitacora "Se creo el grupo '$nombre_grupo'"
 	return 0
-   else
+else
 	echo "No se pudo crear grupo. Verifique sus permisos de usuario"
 	return 1
-   fi
+fi
 
 }
 #===========================================================================================================================================================
@@ -87,8 +98,6 @@ ver_grupos(){
         echo "  (No hay grupos adicionales creados)"
     fi
 }
-
-
 #===========================================================================================================================================================
 
 #FUNCION PARA VER LOS MIEMBROS
@@ -96,32 +105,37 @@ ver_grupos(){
 ver_miembros_grupos(){
 
 local nombre_grupo
-
 read -rp "Nombre del grupo a consultar: " nombre_grupo
 
-#VALLIDAD CAMPO VACIO
 if [[ -z "$nombre_grupo" ]]; then
-	echo "ERROR: ESTO CAMPO NO PUEDE QUEDAR VACIO"
-	return 1
+        echo "ERROR: ESTO CAMPO NO PUEDE QUEDAR VACIO"
+        return 1
 fi
 
-#VALIDAD SI GRUPO NO EXISTE
 if ! getent group "$nombre_grupo" &> /dev/null; then
-	echo "ERROR: GRUPO NO EXISTE"
-	return 1
+        echo "ERROR: GRUPO NO EXISTE"
+        return 1
 fi
 
-local miembros
-miembros="$(getent group "$nombre_grupo" | cut -d: -f4)"
 echo "INTEGRANTES DE '$nombre_grupo'"
 
-#VALIDACION DE MIEMBROS DEL GRUPO
-if [[ -z "$miembros" ]]; then
-	echo "ERROR: NO SE MUESTRAN MIEMBROS PARA ESTE GRUPO"
+local gid
+gid="$(getent group "$nombre_grupo" | cut -d: -f3)"
+
+# Unimos miembros secundarios (campo 4 del grupo) y miembros
+# primarios (usuarios cuyo GID principal coincide con este grupo)
+local todos_los_miembros
+todos_los_miembros="$( (
+    getent group "$nombre_grupo" | cut -d: -f4 | tr ',' '\n'
+    getent passwd | awk -F: -v gid="$gid" '$4 == gid {print $1}'
+) | grep -v '^$' | sort -u )"
+
+if [[ -z "$todos_los_miembros" ]]; then
+        echo "Este grupo no tiene integrantes registrados"
 else
-	echo "$miembros" | tr ',' '\n' | while read -r usuario; do
-		echo   " -$usuario"
-	done
+        echo "$todos_los_miembros" | while read -r usuario; do
+                echo " - $usuario"
+        done
 fi
 
 }
@@ -157,6 +171,16 @@ eliminar_grupo() {
             return 1
         fi
     done
+
+	# VALIDACION: PROTEGER GRUPOS CRÍTICOS DEL SISTEMA OPERATIVO
+	local grupos_sistema_criticos=("root" "sudo" "wheel" "shadow" "adm" "staff")
+	for critico in "${grupos_sistema_criticos[@]}"; do
+    		if [[ "$nombre_grupo" == "$critico" ]]; then
+        	echo "ERROR: '$nombre_grupo' es un grupo crítico del sistema operativo."
+        	echo "       No se puede eliminar bajo ninguna circunstancia."
+        	return 1
+    	fi
+	done
 
     # VALIDACION: ¿ES EL GRUPO PRIMARIO DE ALGÚN USUARIO?
     # Buscamos el GID de este grupo, y revisamos si algún usuario
