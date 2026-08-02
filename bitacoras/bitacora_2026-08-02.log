@@ -19,3 +19,12 @@
 2026-08-02 - 11:55:28 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
 2026-08-02 - 11:57:01 - root - Se comprimio '/home/ramon/pruebaRamon'
 2026-08-02 - 11:57:26 - root - Se elimino el archivo '/home/ramon/pruebaRamon'
+2026-08-02 - 11:58:20 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 12:22:59 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 12:25:54 - root - Se cambio propietario de '/home/ramon/Cisco' a 'desarrollador2'
+2026-08-02 - 12:26:27 - root - Se cambio grupo de '/home/ramon/Cisco' a 'desarrollo'
+2026-08-02 - 12:27:38 - root - Se creo escenario privado en '/home/ramon/carpetaPrivada' para grupo 'desarrollo'
+2026-08-02 - 12:30:53 - root - Se creo escenario compartido en '/home/ramon/carpetaCompartida' para grupo 'desarrollo'
+2026-08-02 - 12:31:56 - root - Se creo escenario de solo lectura en '/home/ramon/carpetaPrivada' para grupo 'desarrollo'
+2026-08-02 - 12:39:21 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 12:42:07 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
