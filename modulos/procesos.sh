@@ -5,8 +5,22 @@
 #FUNCION PARA MOSTRAR 20 PROCESOS ACTIVOS
 #===========================================================================================================================================================
 listar_procesos() {
-    echo  "Procesos activos: "
-    ps aux | head -20
+
+    local total
+    total="$(ps aux | wc -l)"
+
+echo "Procesos activos (mostrando 20 de $total totales): "
+
+ps aux | head -20
+
+    if [[ "$total" -gt 20 ]]; then
+        if confirmar_accion "¿Desea ver la lista completa?"; then
+            echo ""
+            echo "--- Lista completa ---"
+            ps aux
+        fi
+    fi
+
 }
 #===========================================================================================================================================================
 
@@ -45,7 +59,13 @@ buscar_proceso_pid() {
 local pid
 read -rp "PID a buscar: " pid
 
-#VALIDACION DE DATO CORRRECTO
+#VALIDACION DE CAMPO VACIO
+if [[ -z "$pid" ]]; then
+        echo "ERROR: EL PID NO PUEDE QUEDAR VACIO"
+        return 1
+fi
+
+#VALIDACION DE DATO CORRECTO
 if [[ ! "$pid" =~ ^[0-9]+$ ]]; then
         echo "ERROR: EL PID DEBE SER NUMERICO"
         return 1
@@ -66,8 +86,16 @@ ps -p "$pid" -o pid,ppid,user,%cpu,%mem,cmd
 #FUNCION PARA VER PROCESOS DEL USUARIO ACTUAL
 #===========================================================================================================================================================
 procesos_usuario_actual() {
-echo "Procesos del usuario actual ($(whoami)): "
-ps -u "$(whoami)"
+
+local usuario
+usuario="$(whoami)"
+local total
+total="$(pgrep -u "$usuario" | wc -l)"
+
+echo "Procesos del usuario actual ($usuario): "
+echo "Total de tareas activas: $total"
+echo ""
+ps -u "$usuario"
 
 }
 #===========================================================================================================================================================
@@ -89,13 +117,18 @@ ps aux --sort=-%mem | head -6
 #FUNCION PARA FINALIZAR RROCESOS
 #===========================================================================================================================================================
 finalizar_proceso_pid() {
-#VALIDACION USUARIO ROOT
+
 if ! requiere_root; then
         return 1
 fi
-
 local pid
 read -rp "PID a finalizar: " pid
+
+#VALIDACION DE CAMPO VACIO
+if [[ -z "$pid" ]]; then
+        echo "ERROR: EL PID NO PUEDE QUEDAR VACIO"
+        return 1
+fi
 
 #VALIDACION DATO CORRECTO
 if [[ ! "$pid" =~ ^[0-9]+$ ]]; then
@@ -118,19 +151,35 @@ fi
 local nombre_proceso
 nombre_proceso="$(ps -p "$pid" -o comm=)"
 
-#CONFIRAMAR ANTES DE ELIMINAR
+#CONFIRMAR ANTES DE ELIMINAR
 if ! confirmar_accion "¿Está seguro que desea finalizar el proceso '$nombre_proceso' (PID $pid)?"; then
         return 1
 fi
 
-#ELIMINADO PROCESO
-if kill "$pid" &> /dev/null; then
+#INTENTO SUAVE (SIGTERM) - le pide al proceso que cierre por si mismo
+kill "$pid" &> /dev/null
+sleep 2
+
+#VERIFICAR SI REALMENTE TERMINO
+if ! ps -p "$pid" &> /dev/null; then
         echo "Proceso finalizado exitosamente"
         registrar_bitacora "Se finalizo el proceso PID $pid ($nombre_proceso)"
         return 0
-    else
-        echo "ERROR: NO SE PUDO FINALIZAR EL PROCESO"
-        return 1
+else
+        echo "AVISO: el proceso no respondió a la señal normal (SIGTERM)."
+        if confirmar_accion "¿Desea forzar su finalización (SIGKILL)?"; then
+                if kill -9 "$pid" &> /dev/null; then
+                        echo "Proceso finalizado de forma forzada"
+                        registrar_bitacora "Se forzo la finalizacion del proceso PID $pid ($nombre_proceso)"
+                        return 0
+                else
+                        echo "ERROR: NO SE PUDO FINALIZAR EL PROCESO NI DE FORMA FORZADA"
+                        return 1
+                fi
+        else
+                echo "Operación cancelada. El proceso sigue activo."
+                return 1
+        fi
 fi
 
 }
@@ -139,39 +188,51 @@ fi
 #FINALIZAR PROCESO POR MEDIO DE NOMBRE
 #===========================================================================================================================================================
 finalizar_proceso_nombre() {
-#VALIDACION DE USUARIO ROOT
+
 if ! requiere_root; then
         return 1
 fi
-
 local nombre
 read -rp "Nombre del proceso a finalizar: " nombre
 
-#VALIDAR CAMPO VACIO
 if [[ -z "$nombre" ]]; then
         echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
         return 1
 fi
 
-#VALIDACION NOMBRE DEL PROCESO
 if ! pgrep -x "$nombre" &> /dev/null; then
         echo "ERROR: NO EXISTE UN PROCESO CON ESE NOMBRE"
         return 1
 fi
 
-#CONFIRMAR ANTES DE ELIMINAR
 if ! confirmar_accion "¿Está seguro que desea finalizar todos los procesos '$nombre'?"; then
         return 1
 fi
 
-#MOSTRAR LOS DATOS
-if pkill -x "$nombre" &> /dev/null; then
+#INTENTO SUAVE (SIGTERM)
+pkill -x "$nombre" &> /dev/null
+sleep 2
+
+#VERIFICAR SI TODAVIA QUEDAN PROCESOS CON ESE NOMBRE
+if ! pgrep -x "$nombre" &> /dev/null; then
         echo "Proceso(s) finalizado(s) exitosamente"
         registrar_bitacora "Se finalizaron procesos con nombre '$nombre'"
         return 0
-    else
-        echo "ERROR: NO SE PUDO FINALIZAR"
-        return 1
+else
+        echo "AVISO: algunos procesos no respondieron a la señal normal (SIGTERM)."
+        if confirmar_accion "¿Desea forzar su finalización (SIGKILL)?"; then
+                if pkill -9 -x "$nombre" &> /dev/null; then
+                        echo "Proceso(s) finalizado(s) de forma forzada"
+                        registrar_bitacora "Se forzo la finalizacion de procesos con nombre '$nombre'"
+                        return 0
+                else
+                        echo "ERROR: NO SE PUDO FINALIZAR NI DE FORMA FORZADA"
+                        return 1
+                fi
+        else
+                echo "Operación cancelada. Algunos procesos siguen activos."
+                return 1
+        fi
 fi
 
 }
