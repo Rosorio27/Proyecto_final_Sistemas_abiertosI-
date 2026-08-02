@@ -1,4 +1,5 @@
 #! /bin/bash
+
 RUTA_PRINCIPAL="$(dirname "$(realpath "$0")")"
 
 #DECLARACION DE ARCHIVO DE CONFIGURACION
@@ -11,7 +12,7 @@ if [[ ! -f "$ARCHIVO_CONFIG" ]];then
    exit 1
 
 else
-#Si el archivo existe carga las variable de entorno y comienza el script 
+#Si el archivo existe carga las variable de entorno y comienza el script
 	source "$ARCHIVO_CONFIG"
 fi
 
@@ -26,7 +27,7 @@ RUTA_DOCUMENTACION="$RUTA_PRINCIPAL/documentacion"
 #ARREGLO RUTAS PRINCIPALES
 CARPETAS_PRINCIPALES=("$RUTA_MODULOS" "$RUTA_REPORTES" "$RUTA_RESPALDOS" "$RUTA_BITACORAS" "$RUTA_TEMPORALES" "$RUTA_DOCUMENTACION")
 
-#DECLARACION DE RUTA PARA LA BITACORA 
+#DECLARACION DE RUTA PARA LA BITACORA
 ARCHIVO_BITACORA="$RUTA_BITACORAS/bitacora_$(date +%Y-%m-%d).log"
 
 #SOURCE PARA BITACORA
@@ -52,6 +53,13 @@ source "$RUTA_MODULOS/respaldos.sh"
 #SOURCE PARA MODULO REPORTES
 source "$RUTA_MODULOS/reportes.sh"
 
+
+#VERIFICACION RESPALDO AUTOMATICO
+if [[ "$1" == "respaldo-automatico" ]]; then
+	respaldo_automatico
+	exit 0
+fi
+
 #VERIFICACION DE LAS CARPETAS PRINCIPALES
 verificar_carpetas_principales(){
 for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
@@ -62,6 +70,7 @@ for carpeta in "${CARPETAS_PRINCIPALES[@]}"; do
 done
 
 }
+
 #VERIFICACION DE PRIVILEGIOS 
 verificar_privilegios(){
 if [[ $EUID -eq 0 ]]; then
@@ -131,12 +140,5 @@ menu_principal(){
         esac
     done
 }
-
-#VERIFICACION DE ARGUMENTO PARA RESPALDO AUTOMATICO VIA CRON
-if [[ "$1" == "--respaldo-automatico" ]]; then
-	source "$RUTA_MODULOS/respaldos.sh"
-	respaldo_automatico
-	exit 0
-fi
 
 menu_principal

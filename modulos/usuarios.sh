@@ -14,9 +14,15 @@ fi
 local nombre_usuario
 local grupo_asignado
 
+echo
+echo "Formato permitido: solo minúsculas, números, '-' o '_'."
+echo "Debe iniciar con una letra minúscula o '_'."
+echo "Ejemplos válidos: carlos, admin_2, _soporte"
+echo ""
+
 read -rp "Nombre del nuevo usuario: " nombre_usuario
 
-#VALIDACION DE CAMPO VACIO 
+#VALIDACION DE CAMPO VACIO
 if [[ -z "$nombre_usuario" ]];then
 	echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
 	return 1
@@ -49,14 +55,25 @@ if ! getent group "$grupo_asignado" &> /dev/null; then
         return 1
 fi
 
-#CREACION DEL USUARIO 
+#CREACION DEL USUARIO
 if useradd -m -g "$grupo_asignado" "$nombre_usuario" &> /dev/null; then
-	echo "Usuario '$nombre_usuario' creado exitosamente en el grupo '$grupo_asignado'"
-        registrar_bitacora "Se creo el usuario '$nombre_usuario' en el grupo '$grupo_asignado'"
-        return 0
-    else
-        echo "ERROR: NO SE PUDO CREAR USUARIO"
-        return 1
+    echo "Usuario '$nombre_usuario' creado exitosamente en el grupo '$grupo_asignado'"
+
+    # VERIFICACION DE LA CARPETA HOME
+    local home_usuario="/home/$nombre_usuario"
+
+    	if [[ -d "$home_usuario" ]]; then
+        	echo "Directorio personal creado: $home_usuario"
+        	echo "Permisos del home: $(stat -c '%A' "$home_usuario")"
+    	else
+        	echo "ADVERTENCIA: el usuario se creó, pero no se detectó su directorio personal"
+    	fi
+
+    	registrar_bitacora "Se creo el usuario '$nombre_usuario' en el grupo '$grupo_asignado'"
+    	return 0
+else
+    	echo "ERROR: NO SE PUDO CREAR USUARIO"
+    	return 1
 fi
 
 }
@@ -86,9 +103,12 @@ if ! id "$nombre_usuario" &> /dev/null; then
         return 1
 fi
 
-echo "Información de '$nombre_usuario: "
+echo
+echo "Información del usuario: $nombre_usuario"
+echo
 
 id "$nombre_usuario"
+
 info_passwd="$(getent passwd "$nombre_usuario")"
 home_usuario="$(echo "$info_passwd" | cut -d: -f6)"
 shell_usuario="$(echo "$info_passwd" | cut -d: -f7)"
@@ -96,12 +116,24 @@ shell_usuario="$(echo "$info_passwd" | cut -d: -f7)"
 echo "Directorio personal: $home_usuario"
 echo "Shell asignada: $shell_usuario"
 
-#VERIFICAR SI EXISTE SU DIRECTORIO PERSONAL 
+#VERIFICAR SI EXISTE SU DIRECTORIO PERSONAL
+
 if [[ -d "$home_usuario" ]]; then
     	echo "Estado del home: EXISTE en el sistema ($home_usuario)"
 else
     	echo "Estado del home: NO EXISTE en el sistema (ruta esperada: $home_usuario)"
 fi
+
+#VER GRUPOS A LOS QUE PERTENECE
+echo
+echo "Grupos a los que pertenece:"
+id -nG "$nombre_usuario" | tr ' ' '\n' | while read -r grupo; do
+    echo "  - $grupo"
+done
+
+echo
+echo "Fecha de creación / último cambio de clave:"
+chage -l "$nombre_usuario" 2>/dev/null | head -1
 
 }
 #==========================================================================================================================================================
@@ -109,29 +141,31 @@ fi
 #FUNCION PARA LISTAR TODOS LOS USUARIOS
 lista_usuarios(){
 
-echo "Lista de todos los usuarios del Sistema"
+ echo "Lista de usuarios de la organización"
+    echo "----------------------------------------"
 
-local encontrados=0
-local usuario_actual="$(whoami)"
+    local encontrados=0
+    local usuario_actual="$(whoami)"
 
-    while read -r linea; do
-        local nombre="$(echo "$linea" | cut -d: -f1)"
-        local uid="$(echo "$linea" | cut -d: -f3)"
-        local grupo_gid="$(echo "$linea" | cut -d: -f4)"
+    while IFS=: read -r nombre password uid gid comentario home shell; do
 
-        if [[ "$uid" -ge 1000 ]] && [[ "$nombre" != "nobody" ]] && [[ "$nombre" != "$usuario_actual" ]]; then
+        # Solo usuarios reales (UID >= 1000), sin contar al que opera el sistema
+        if [[ "$uid" -ge 1000 ]] && [[ "$nombre" != "$usuario_actual" ]] && [[ "$nombre" != "nobody" ]]; then
+
             local nombre_grupo
-            nombre_grupo="$(getent group "$grupo_gid" | cut -d: -f1)"
-            echo " - $nombre (grupo: $nombre_grupo)"
+            nombre_grupo="$(getent group "$gid" | cut -d: -f1)"
+
+            echo " - $nombre  |  grupo: $nombre_grupo  |  shell: $shell"
             encontrados=1
         fi
+
     done < /etc/passwd
 
     if [[ "$encontrados" -eq 0 ]]; then
         echo "  (Aún no se ha creado ningún usuario)"
     fi
-
 }
+
 #===========================================================================================================================================================
 #FUNCION PARA MODIFICAR LA INFORMACION DE LOS USUARIOS 
 
@@ -144,13 +178,13 @@ fi
 local nombre_usuario
 read -rp "Nombre del usuario a modificar: " nombre_usuario
 
-#VALIDACION CAMPO VACIO 
+#VALIDACION CAMPO VACIO
 if [[ -z "$nombre_usuario" ]]; then
         echo "ERROR: EL NOMBRE NO PUEDE QUEDAR VACIO"
         return 1
 fi
 
-#VALIDACION DE USUARIO EXISTENTE 
+#VALIDACION DE USUARIO EXISTENTE
 if ! id "$nombre_usuario" &> /dev/null; then
         echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
         return 1
@@ -159,44 +193,59 @@ fi
 echo "¿Qué desea modificar?"
 echo "1) Comentario / nombre completo"
 echo "2) Shell asignada"
+echo "3) Fecha de expiración de la cuenta"
 
 local opcion_modificar
 read -rp "Opción: " opcion_modificar
 
 case "$opcion_modificar" in
 
-	1)
+1)
             local nuevo_comentario
-            read -rp "Nuevo comentario: " nuevo_comentario
-
-		if usermod -c "$nuevo_comentario" "$nombre_usuario" &> /dev/null; then
-                	echo "Comentario actualizado correctamente"
-                	registrar_bitacora "Se modifico el comentario del usuario '$nombre_usuario'"
-            	else
-                	echo "ERROR: NO SE PUDO ACTUALIZAR"
-            	fi
+            read -rp "Nuevo comentario (ejemplo: Juan Perez - Ventas): " nuevo_comentario
+            if usermod -c "$nuevo_comentario" "$nombre_usuario" &> /dev/null; then
+                echo "Comentario actualizado correctamente"
+                registrar_bitacora "Se modifico el comentario del usuario '$nombre_usuario'"
+            else
+                echo "ERROR: NO SE PUDO ACTUALIZAR"
+            fi
             ;;
         2)
             local nueva_shell
-            read -rp "Nueva shell (ej. /bin/bash): " nueva_shell
+            read -rp "Nueva shell (ejemplo: /bin/bash): " nueva_shell
+            if [[ ! -f "$nueva_shell" ]]; then
+                echo "ERROR: esa shell no existe en el sistema"
+                return 1
+            fi
+            if usermod -s "$nueva_shell" "$nombre_usuario" &> /dev/null; then
+                echo "Shell actualizada correctamente"
+                registrar_bitacora "Se modifico la shell del usuario '$nombre_usuario'"
+            else
+                echo "ERROR: NO SE PUDO ACTUALIZAR"
+            fi
+            ;;
+        3)
+            local nueva_fecha
+            read -rp "Nueva fecha de expiración (YYYY-MM-DD): " nueva_fecha
 
-		if [[ ! -f "$nueva_shell" ]]; then
- 	               echo "ERROR: esa shell no existe en el sistema"
-        	        return 1
-            	fi
+            if [[ ! "$nueva_fecha" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+                echo "ERROR: FORMATO DE FECHA INVALIDO (use YYYY-MM-DD)"
+                return 1
+            fi
 
-		if usermod -s "$nueva_shell" "$nombre_usuario" &> /dev/null; then
-	                echo "Shell actualizada correctamente"
-        	        registrar_bitacora "Se modifico la shell del usuario '$nombre_usuario'"
-            	else
-                	echo "ERROR: NO SE PUDO ACTUALIZAR"
-            	fi
+            if usermod -e "$nueva_fecha" "$nombre_usuario" &> /dev/null; then
+                echo "Fecha de expiración actualizada correctamente"
+                registrar_bitacora "Se modifico fecha de expiracion del usuario '$nombre_usuario' a '$nueva_fecha'"
+            else
+                echo "ERROR: NO SE PUDO ACTUALIZAR (verifique el formato de fecha)"
+            fi
             ;;
         *)
             echo "ERROR: OPCION INVALIDA"
             return 1
             ;;
     esac
+
 }
 
 #===========================================================================================================================================================
@@ -222,9 +271,10 @@ if ! id "$nombre_usuario" &> /dev/null; then
         echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
         return 1
 fi
+
 #BLOQUEAR UN USUARIO
 if usermod -L "$nombre_usuario" &> /dev/null; then
-        echo "Usuario '$nombre_usuario' bloqueado correctamente"
+        echo "Usuario $nombre_usuario bloqueado correctamente"
         registrar_bitacora "Se bloqueo el usuario '$nombre_usuario'"
         return 0
     else
@@ -256,13 +306,13 @@ fi
 
 #VALIDACION SI EXISTE EL USUARIO 
 if ! id "$nombre_usuario" &> /dev/null; then
-        echo "ERROR: EL USUARIO '$nombre_usuario' NO EXISTE"
+        echo "ERROR: EL USUARIO $nombre_usuario NO EXISTE"
         return 1
 fi
 
 #DESBLOQUEAR A UN USUARIO
 if usermod -U "$nombre_usuario" &> /dev/null; then
-        echo "Usuario '$nombre_usuario' desbloqueado correctamente"
+        echo "Usuario $nombre_usuario desbloqueado correctamente"
         registrar_bitacora "Se desbloqueo el usuario '$nombre_usuario'"
         return 0
     else
