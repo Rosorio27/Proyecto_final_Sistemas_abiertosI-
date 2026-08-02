@@ -9,3 +9,13 @@
 2026-08-02 - 11:02:32 - root - Se renombro 'carpeta1' a 'carpeta2'
 2026-08-02 - 11:06:42 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
 2026-08-02 - 11:07:23 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 11:10:08 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 11:51:39 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 11:52:13 - root - Se creo el archivo '/home/ramon'
+2026-08-02 - 11:52:35 - root - Se creo el archivo '/home/ramon/prueba_archivo'
+2026-08-02 - 11:53:40 - root - Se escribio contenido en '/home/ramon/prueba_archivo'
+2026-08-02 - 11:54:02 - root - Se agrego contenido a '/home/ramon/prueba_archivo'
+2026-08-02 - 11:55:00 - root - Se renombro '/home/ramon/prueba_archivo' a '/home/ramon/pruebaRamon'
+2026-08-02 - 11:55:28 - root - BIENVENIDO A LA BITACORA DE REGISTRO DEL SISTEMA
+2026-08-02 - 11:57:01 - root - Se comprimio '/home/ramon/pruebaRamon'
+2026-08-02 - 11:57:26 - root - Se elimino el archivo '/home/ramon/pruebaRamon'
