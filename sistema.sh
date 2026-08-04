@@ -55,7 +55,7 @@ source "$RUTA_MODULOS/reportes.sh"
 
 
 #VERIFICACION RESPALDO AUTOMATICO
-if [[ "$1" == "respaldo-automatico" ]]; then
+if [[ "$1" == "--respaldo-automatico" ]]; then
 	respaldo_automatico
 	exit 0
 fi

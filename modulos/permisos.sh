@@ -412,52 +412,11 @@ if ! getent group "$grupo" &> /dev/null; then
         return 1
 fi
 
-#AVISO SI LA CARPETA YA EXISTIA
-if ! requiere_root; then
-        return 1
-fi
-local ruta
-local grupo
-read -rp "Ruta del directorio de consulta a crear: " ruta
-read -rp "Grupo con acceso de solo lectura (ej. soporte): " grupo
-
-if [[ -z "$ruta" ]] || [[ -z "$grupo" ]]; then
-        echo "ERROR: AMBOS CAMPOS SON OBLIGATORIOS"
-        return 1
-fi
-
-if ! getent group "$grupo" &> /dev/null; then
-        echo "ERROR: EL GRUPO NO EXISTE"
-        return 1
-fi
 
 #AVISO SI LA CARPETA YA EXISTIA
 if [[ -d "$ruta" ]]; then
         echo "AVISO: la carpeta ya existía. Se le aplicarán los nuevos permisos."
 fi
-
-#CREACION Y CONFIGURACION DEL ESCENARIO, VALIDANDO CADA PASO
-if ! mkdir -p "$ruta"; then
-        echo "ERROR: NO SE PUDO CREAR LA CARPETA"
-        return 1
-fi
-
-if ! chgrp "$grupo" "$ruta"; then
-        echo "ERROR: NO SE PUDO ASIGNAR EL GRUPO"
-        return 1
-fi
-
-# propietario: rwx | grupo: r-x | otros: sin acceso
-if ! chmod 750 "$ruta"; then
-        echo "ERROR: NO SE PUDIERON APLICAR LOS PERMISOS"
-        return 1
-fi
-
-#VALIDACION SI LA CARPETA YA EXISTIA CON OTRO PERMISO
-echo "Escenario de CONSULTA creado: '$ruta'"
-echo "  Grupo ($grupo): solo lectura y acceso | Otros: sin acceso"
-registrar_bitacora "Se creo escenario de solo lectura en '$ruta' para grupo '$grupo'"
-return 0
 
 #CREACION Y CONFIGURACION DEL ESCENARIO, VALIDANDO CADA PASO
 if ! mkdir -p "$ruta"; then
